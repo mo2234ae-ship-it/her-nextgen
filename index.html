@@ -3,407 +3,486 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HER NextGen - Investment & Task Platform</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>HER NextGen - SNAI Investment & Task Platform</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-color: #10b981;
+            --accent-hover: #059669;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-bottom: 70px;
+        }
+
+        .auth-container {
+            max-width: 450px;
+            margin: 40px auto;
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+
+        .dashboard-container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 15px;
+        }
+
+        .card-custom {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            border: 1px solid #334155;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .btn-accent {
+            background-color: var(--accent-color);
+            color: white;
+            font-weight: 600;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            width: 100%;
+        }
+
+        .btn-accent:hover {
+            background-color: var(--accent-hover);
+            color: white;
+        }
+
+        .nav-bottom {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--card-bg);
+            border-top: 1px solid #334155;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 1000;
+        }
+
+        .nav-item-btn {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 12px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .nav-item-btn.active, .nav-item-btn:hover {
+            color: var(--accent-color);
+        }
+
+        .nav-item-btn i {
+            font-size: 20px;
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        .badge-verified {
+            background-color: #065f46;
+            color: #34d399;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .badge-unverified {
+            background-color: #881337;
+            color: #fecdd3;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        #camera-preview {
+            width: 100%;
+            max-height: 250px;
+            background: #000;
+            border-radius: 12px;
+            object-fit: cover;
+        }
+
+        .copy-box {
+            background: #0f172a;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px dashed #475569;
+            word-break: break-all;
+            font-size: 13px;
+        }
     </style>
 </head>
-<body class="bg-slate-900 text-white min-h-screen">
-    <!-- Header Navigation -->
-    <nav class="bg-slate-800/80 backdrop-filter blur-md border-b border-slate-700 sticky top-0 z-50 px-4 py-3 flex justify-between items-center">
-        <div class="flex items-center space-x-2">
-            <i class="fa-solid fa-gem text-teal-400 text-2xl"></i>
-            <span class="font-bold text-xl tracking-wider text-teal-400">HER NextGen</span>
-        </div>
-        <div id="userInfoHeader" class="hidden items-center space-x-3">
-            <span id="userPhone" class="text-xs bg-slate-700 px-2.5 py-1 rounded-full text-teal-300"></span>
-            <button onclick="logout()" class="text-red-400 hover:text-red-300 text-sm"><i class="fa-solid fa-right-from-bracket"></i></button>
-        </div>
-    </nav>
+<body>
 
-    <!-- Main Container -->
-    <main class="max-w-md mx-auto p-4 pb-20">
+    <!-- AUTH SECTION (Login / Sign Up) -->
+    <div id="auth-section" class="auth-container">
+        <h3 class="text-center mb-4 text-emerald" style="color: var(--accent-color);">HER NextGen</h3>
+        
+        <ul class="nav nav-pills nav-justified mb-4" id="authTab" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active text-white" id="login-tab" data-bs-toggle="pill" data-bs-target="#login-panel">লগইন</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link text-white" id="signup-tab" data-bs-toggle="pill" data-bs-target="#signup-panel">সাইন আপ</button>
+            </li>
+        </ul>
 
-        <!-- Auth Section -->
-        <section id="authSection" class="space-y-6">
-            <!-- Tabs -->
-            <div class="flex bg-slate-800 rounded-xl p-1 border border-slate-700">
-                <button onclick="switchTab('signup')" id="tabSignupBtn" class="flex-1 py-2 rounded-lg font-semibold text-sm bg-teal-500 text-slate-950">সাইন-আপ (Sign Up)</button>
-                <button onclick="switchTab('login')" id="tabLoginBtn" class="flex-1 py-2 rounded-lg font-semibold text-sm text-slate-400">লগইন (Login)</button>
-            </div>
-
-            <!-- Sign Up Form -->
-            <form id="signupForm" onsubmit="handleSignup(event)" class="glass-card p-5 rounded-2xl space-y-4">
-                <h2 class="text-lg font-bold text-teal-400 flex items-center gap-2"><i class="fa-solid fa-user-plus"></i> নতুন অ্যাকাউন্ট তৈরি করুন</h2>
-                
-                <div>
-                    <label class="block text-xs text-slate-400 mb-1">পূর্ণ নাম (Full Name)</label>
-                    <input type="text" id="signupName" required placeholder="আপনার নাম লিখুন" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-teal-400">
-                </div>
-                <div>
-                    <label class="block text-xs text-slate-400 mb-1">ফোন নম্বর (Phone Number)</label>
-                    <input type="tel" id="signupPhone" required placeholder="017xxxxxxxx" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-teal-400">
-                </div>
-                <div>
-                    <label class="block text-xs text-slate-400 mb-1">ইমেইল (Email)</label>
-                    <input type="email" id="signupEmail" required placeholder="example@mail.com" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-teal-400">
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs text-slate-400 mb-1">পাসওয়ার্ড</label>
-                        <input type="password" id="signupPassword" required placeholder="******" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-teal-400">
-                    </div>
-                    <div>
-                        <label class="block text-xs text-slate-400 mb-1">কনফার্ম পাসওয়ার্ড</label>
-                        <input type="password" id="signupConfirmPassword" required placeholder="******" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-teal-400">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-xs text-slate-400 mb-1">উইথড্র পাসওয়ার্ড (৬ ডিজিটের পিন)</label>
-                    <input type="password" maxlength="6" id="signupWithdrawPassword" required placeholder="123456" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-teal-400">
-                </div>
-                <div>
-                    <label class="block text-xs text-slate-400 mb-1">রেফারেল কোড (ঐচ্ছিক)</label>
-                    <input type="text" id="signupRefCode" placeholder="রেফারেল কোড থাকলে দিন" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-teal-400">
-                </div>
-
-                <!-- Face Scan Option -->
-                <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700 text-center space-y-2">
-                    <p class="text-xs text-slate-300">নিরাপত্তার জন্য ফেস স্ক্যান (Face Scan Verification)</p>
-                    <button type="button" onclick="startFaceVerification()" class="w-full bg-slate-700 border border-teal-500/30 text-teal-300 py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-camera"></i> ফেস স্ক্যান শুরু করুন
-                    </button>
-                    <div id="faceStatus" class="text-xs text-amber-400 hidden">পেন্ডিং স্ক্যান...</div>
-                </div>
-
-                <button type="submit" class="w-full bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold py-3 rounded-xl shadow-lg shadow-teal-500/20 transition">সাইন-আপ নিশ্চিত করুন</button>
-            </form>
-
+        <div class="tab-content">
             <!-- Login Form -->
-            <form id="loginForm" onsubmit="handleLogin(event)" class="glass-card p-5 rounded-2xl space-y-4 hidden">
-                <h2 class="text-lg font-bold text-teal-400 flex items-center gap-2"><i class="fa-solid fa-right-to-bracket"></i> একাউন্টে লগইন করুন</h2>
-                <div>
-                    <label class="block text-xs text-slate-400 mb-1">ফোন নম্বর বা ইমেইল</label>
-                    <input type="text" id="loginId" required placeholder="017xxxxxxxx or mail@example.com" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-teal-400">
-                </div>
-                <div>
-                    <label class="block text-xs text-slate-400 mb-1">পাসওয়ার্ড</label>
-                    <input type="password" id="loginPassword" required placeholder="******" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-teal-400">
-                </div>
-                <button type="submit" class="w-full bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold py-3 rounded-xl shadow-lg shadow-teal-500/20 transition">লগইন</button>
-            </form>
-        </section>
-
-        <!-- Dashboard Section (Logged In) -->
-        <section id="dashboardSection" class="space-y-5 hidden">
-            
-            <!-- User Balance Card -->
-            <div class="glass-card p-5 rounded-2xl bg-gradient-to-br from-teal-900/40 to-slate-800 border-teal-500/30">
-                <div class="flex justify-between items-start mb-3">
-                    <div>
-                        <span class="text-xs text-slate-400">মোট ব্যালেন্স (USDT Balance)</span>
-                        <h1 class="text-3xl font-extrabold text-teal-400 mt-1">$<span id="userBalance">0.00</span></h1>
+            <div class="tab-pane fade show active" id="login-panel">
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <div class="mb-3">
+                        <label class="form-label">ফোন নম্বর</label>
+                        <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="017xxxxxxxx" required>
                     </div>
-                    <span class="px-2.5 py-1 bg-teal-500/10 text-teal-400 text-xs font-semibold rounded-full border border-teal-500/20">VIP 1</span>
-                </div>
-                <div class="grid grid-cols-2 gap-3 mt-4">
-                    <button onclick="showModal('rechargeModal')" class="bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold py-2.5 rounded-xl text-sm flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-wallet"></i> রিচার্জ (Recharge)
-                    </button>
-                    <button onclick="showModal('withdrawModal')" class="bg-slate-800 border border-slate-700 hover:border-teal-400 text-slate-200 font-bold py-2.5 rounded-xl text-sm flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-money-bill-transfer"></i> উইথড্র (Withdraw)
-                    </button>
-                </div>
+                    <div class="mb-3">
+                        <label class="form-label">পাসওয়ার্ড</label>
+                        <input type="password" class="form-control bg-dark text-white border-secondary" placeholder="******" required>
+                    </div>
+                    <button type="submit" class="btn btn-accent mt-3">লগইন করুন</button>
+                </form>
             </div>
 
-            <!-- Official Mentor & Telegram Support -->
-            <div class="glass-card p-4 rounded-2xl flex items-center justify-between border-slate-700">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-teal-500/20 text-teal-400 rounded-full flex items-center justify-center text-lg">
-                        <i class="fa-solid fa-headset"></i>
+            <!-- Signup Form -->
+            <div class="tab-pane fade" id="signup-panel">
+                <form id="signupForm" onsubmit="handleSignup(event)">
+                    <div class="mb-3">
+                        <label class="form-label">পূর্ণ নাম</label>
+                        <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="আপনার নাম" required>
                     </div>
-                    <div>
-                        <h4 class="text-sm font-bold text-slate-200">মেন্টর ও সাপোর্ট</h4>
-                        <p class="text-xs text-slate-400">মেন্টর: <span class="text-teal-400 font-semibold">@HER_NEXTGEN</span></p>
+                    <div class="mb-3">
+                        <label class="form-label">ফোন নম্বর</label>
+                        <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="017xxxxxxxx" required>
                     </div>
-                </div>
-                <a href="https://t.me/HER_NEXTGEN_OFFICEAL" target="_blank" class="bg-sky-500 hover:bg-sky-400 text-slate-950 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5">
-                    <i class="fa-brands fa-telegram text-sm"></i> টেলিগ্রাম চ্যানেল
-                </a>
+                    <div class="mb-3">
+                        <label class="form-label">পাসওয়ার্ড</label>
+                        <input type="password" class="form-control bg-dark text-white border-secondary" placeholder="******" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">রেফারেল কোড (ঐচ্ছিক)</label>
+                        <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="SNAI1234">
+                    </div>
+                    <button type="submit" class="btn btn-accent mt-3">অ্যাকাউন্ট তৈরি করুন</button>
+                </form>
             </div>
+        </div>
+    </div>
 
-            <!-- Daily Task Box -->
-            <div class="glass-card p-4 rounded-2xl space-y-3">
-                <h3 class="text-sm font-bold text-teal-400 flex items-center gap-2"><i class="fa-solid fa-list-check"></i> আজকের কাজ (Daily Tasks)</h3>
-                <div class="bg-slate-800/80 p-3 rounded-xl flex justify-between items-center border border-slate-700">
-                    <div>
-                        <p class="text-xs font-semibold text-slate-200">দৈনিক SNAI প্রমোট এবং ক্লিকের কাজ</p>
-                        <p class="text-[10px] text-teal-400">+ $1.50 USDT রিওয়ার্ড</p>
-                    </div>
-                    <button id="taskBtn" onclick="claimTask()" class="bg-teal-500 hover:bg-teal-400 text-slate-950 text-xs font-bold px-3 py-1.5 rounded-lg">ক্লেম করুন</button>
-                </div>
+    <!-- MAIN APP DASHBOARD (Hidden initially) -->
+    <div id="app-dashboard" class="dashboard-container d-none">
+        
+        <!-- TOP USER HEADER -->
+        <div class="card-custom d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="m-0" id="user-display-name">User</h5>
+                <small class="text-muted" id="user-display-phone">017xxxxxxxx</small>
             </div>
+            <div>
+                <span id="face-status-badge" class="badge-unverified"><i class="fa-solid fa-triangle-exclamation"></i> Unverified</span>
+            </div>
+        </div>
 
-            <!-- Team & Referral Link -->
-            <div class="glass-card p-4 rounded-2xl space-y-3">
-                <h3 class="text-sm font-bold text-teal-400 flex items-center gap-2"><i class="fa-solid fa-users"></i> আমার টিম ও রেফারেল</h3>
-                <div class="bg-slate-800 p-3 rounded-xl space-y-2">
-                    <div class="flex justify-between text-xs">
-                        <span class="text-slate-400">রেফারেল কোড:</span>
-                        <span id="displayRefCode" class="font-bold text-teal-300">HER101</span>
+        <!-- TAB 1: HOME PAGE -->
+        <div id="page-home" class="page-content">
+            <div class="card-custom text-center">
+                <small class="text-muted">বর্তমান ব্যালেন্স</small>
+                <h2 class="text-success mt-1">$<span id="user-balance">0.00</span> USDT</h2>
+                <div class="row mt-4">
+                    <div class="col-6">
+                        <button class="btn btn-outline-success w-100" onclick="switchPage('recharge')"><i class="fa-solid fa-wallet me-1"></i> রিচার্জ</button>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <input type="text" id="refLinkInput" readonly value="https://hernextgen.com/ref?code=HER101" class="w-full bg-slate-900 text-xs px-2.5 py-2 rounded-lg text-slate-400 focus:outline-none">
-                        <button onclick="copyRefLink()" class="bg-slate-700 text-xs px-3 py-2 rounded-lg hover:text-teal-400">কপি</button>
+                    <div class="col-6">
+                        <button class="btn btn-outline-light w-100" onclick="switchPage('withdraw')"><i class="fa-solid fa-money-bill-transfer me-1"></i> উইথড্র</button>
                     </div>
                 </div>
             </div>
 
-            <!-- Admin Test Control Panel -->
-            <div class="glass-card p-4 rounded-2xl border-amber-500/30 space-y-3">
-                <div class="flex justify-between items-center">
-                    <h3 class="text-sm font-bold text-amber-400 flex items-center gap-2"><i class="fa-solid fa-user-shield"></i> এডমিন টেস্ট কন্ট্রোল</h3>
-                    <span class="text-[10px] bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded">Owner Only</span>
-                </div>
-                <div class="grid grid-cols-2 gap-2 text-xs">
-                    <button onclick="adminAddBalance(10)" class="bg-slate-800 border border-amber-500/30 text-amber-300 py-2 rounded-lg hover:bg-slate-700">+ $10 যোগ করুন</button>
-                    <button onclick="adminApproveAll()" class="bg-slate-800 border border-amber-500/30 text-amber-300 py-2 rounded-lg hover:bg-slate-700">সব পেন্ডিং অ্যাপ্রুভ</button>
+            <div class="card-custom">
+                <h6><i class="fa-solid fa-bolt text-warning me-2"></i>দ্রুত এক্সেস</h6>
+                <div class="row text-center mt-3">
+                    <div class="col-4" onclick="switchPage('trading')" style="cursor: pointer;">
+                        <div class="p-3 bg-dark rounded border border-secondary mb-2"><i class="fa-solid fa-chart-line text-info fa-xl"></i></div>
+                        <small>ট্রেডিং / কাজ</small>
+                    </div>
+                    <div class="col-4" onclick="switchPage('team')" style="cursor: pointer;">
+                        <div class="p-3 bg-dark rounded border border-secondary mb-2"><i class="fa-solid fa-users text-primary fa-xl"></i></div>
+                        <small>মাই টিম</small>
+                    </div>
+                    <div class="col-4" onclick="openFaceVerificationModal()" style="cursor: pointer;">
+                        <div class="p-3 bg-dark rounded border border-secondary mb-2"><i class="fa-solid fa-user-check text-success fa-xl"></i></div>
+                        <small>ফেস ভেরিফাই</small>
+                    </div>
                 </div>
             </div>
-        </section>
+        </div>
 
-    </main>
-
-    <!-- Modal: Recharge -->
-    <div id="rechargeModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50">
-        <div class="glass-card bg-slate-900 border-slate-700 p-5 rounded-2xl max-w-sm w-full space-y-4">
-            <div class="flex justify-between items-center">
-                <h3 class="text-sm font-bold text-teal-400"><i class="fa-solid fa-qrcode"></i> USDT রিচার্জ (BEP20 / TRC20)</h3>
-                <button onclick="closeModal('rechargeModal')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="p-3 bg-slate-800 rounded-xl space-y-2">
-                <p class="text-[11px] text-slate-400">নিচের USDT ওয়ালেট ঠিকানায় টাকা পাঠান:</p>
-                <div class="bg-slate-900 p-2 rounded-lg border border-slate-700 text-[11px] font-mono break-all text-teal-300 select-all" id="usdtAddress">
-                    0x35e629812577ca436e39e07d71a23b67592b9e78
+        <!-- TAB 2: RECHARGE PAGE -->
+        <div id="page-recharge" class="page-content d-none">
+            <div class="card-custom">
+                <h5><i class="fa-solid fa-qrcode text-emerald me-2"></i>USDT (TRC20 / BEP20) রিচার্জ</h5>
+                <p class="text-muted small">নিচের দেওয়া ডিপোজিট ঠিকানায় আপনার USDT পাঠান এবং ট্রানজাকশন সাবমিট করুন।</p>
+                
+                <div class="mb-3">
+                    <label class="form-label small text-muted">অফিশিয়াল ডিপোজিট ওয়ালেট অ্যাড্রেস:</label>
+                    <div class="copy-box d-flex justify-content-between align-items-center">
+                        <span id="deposit-address">0x35e629812577ca436e39e07d71a23b67592b9e78</span>
+                        <button class="btn btn-sm btn-secondary ms-2" onclick="copyAddress()"><i class="fa-regular fa-copy"></i></button>
+                    </div>
                 </div>
-                <button onclick="copyUsdtAddress()" class="w-full bg-slate-700 hover:bg-slate-600 text-xs py-1.5 rounded-lg font-semibold text-slate-200">
-                    অ্যাড্রেস কপি করুন
+
+                <form onsubmit="handleRechargeSubmit(event)">
+                    <div class="mb-3">
+                        <label class="form-label">রিচার্জ পরিমাণ (USDT)</label>
+                        <input type="number" min="10" class="form-control bg-dark text-white border-secondary" placeholder="যেমন: 50" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Transaction Hash (TxID)</label>
+                        <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="TxID পেস্ট করুন" required>
+                    </div>
+                    <button type="submit" class="btn btn-accent w-100">পেমেন্ট সাবমিট করুন</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- TAB 3: TRADING / TASK PAGE -->
+        <div id="page-trading" class="page-content d-none">
+            <div class="card-custom">
+                <h5><i class="fa-solid fa-gears text-info me-2"></i>ডেইলি ট্রেডিং ও টাস্ক</h5>
+                <p class="text-muted small">কাজ শুরু করার জন্য অবশ্যই ফেস ভেরিফিকেশন এবং পর্যাপ্ত ব্যালেন্স থাকতে হবে।</p>
+                
+                <div class="p-3 bg-dark rounded mb-3 border border-secondary text-center">
+                    <span class="text-muted">আজকের বাকি টাস্ক:</span>
+                    <h4 class="text-warning mt-1"><span id="tasks-left">5</span> / 5</h4>
+                </div>
+
+                <button id="btn-start-task" class="btn btn-accent py-3 w-100 fs-5" onclick="runTaskProcess()">
+                    <i class="fa-solid fa-play me-2"></i> স্টার্ট ট্রেডিং (Start Task)
                 </button>
             </div>
-            <div>
-                <label class="block text-xs text-slate-400 mb-1">রিচার্জের পরিমাণ (USDT)</label>
-                <input type="number" id="rechargeAmount" placeholder="১০ বা তার বেশি" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-teal-400">
+        </div>
+
+        <!-- TAB 4: TEAM PAGE -->
+        <div id="page-team" class="page-content d-none">
+            <div class="card-custom">
+                <h5><i class="fa-solid fa-user-group text-primary me-2"></i>টিম এবং রেফারেল</h5>
+                <div class="copy-box my-3 d-flex justify-content-between align-items-center">
+                    <small>রেফারেল লিংক: https://her-nextgen.vercel.app/?ref=SNAI88</small>
+                    <button class="btn btn-sm btn-secondary ms-2" onclick="alert('রেফারেল লিংক কপি হয়েছে!')"><i class="fa-regular fa-copy"></i></button>
+                </div>
+
+                <div class="row text-center mb-3">
+                    <div class="col-6">
+                        <div class="p-2 bg-dark rounded border border-secondary">
+                            <small class="text-muted">মোট টিম সাইজ</small>
+                            <h4 class="text-white m-0">12 জন</h4>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-2 bg-dark rounded border border-secondary">
+                            <small class="text-muted">টিম কমিশন</small>
+                            <h4 class="text-success m-0">$14.50</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <h6>রেফারেল লেভেল:</h6>
+                <ul class="list-group list-group-flush bg-dark rounded">
+                    <li class="list-group-item bg-dark text-white d-flex justify-content-between border-secondary">
+                        <span>Level 1 (Direct)</span>
+                        <span class="badge bg-success">8 Members</span>
+                    </li>
+                    <li class="list-group-item bg-dark text-white d-flex justify-content-between border-secondary">
+                        <span>Level 2 (Indirect)</span>
+                        <span class="badge bg-info">4 Members</span>
+                    </li>
+                </ul>
             </div>
-            <div>
-                <label class="block text-xs text-slate-400 mb-1">ট্রানজ্যাকশন আইডি (TrxID / Hash)</label>
-                <input type="text" id="rechargeTrx" placeholder="পেমেন্ট হ্যাশ বা TrxID দিন" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-teal-400">
+        </div>
+
+        <!-- TAB 5: WITHDRAW PAGE -->
+        <div id="page-withdraw" class="page-content d-none">
+            <div class="card-custom">
+                <h5><i class="fa-solid fa-wallet text-danger me-2"></i>উইথড্র রিকোয়েস্ট</h5>
+                <p class="text-muted small">উইথড্র দেওয়ার আগে রিয়েল-টাইম ফেস ভেরিফিকেশন করা বাধ্যতামূলক।</p>
+
+                <form onsubmit="handleWithdrawSubmit(event)">
+                    <div class="mb-3">
+                        <label class="form-label">উইথড্র পরিমাণ (USDT)</label>
+                        <input type="number" min="10" class="form-control bg-dark text-white border-secondary" placeholder="সর্বনিম্ন $10" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">আপনার USDT (TRC20/BEP20) ওয়ালেট অ্যাড্রেস</label>
+                        <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="0x..." required>
+                    </div>
+                    <button type="submit" class="btn btn-danger py-2 w-100">উইথড্র নিশ্চিত করুন</button>
+                </form>
             </div>
-            <button onclick="submitRecharge()" class="w-full bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold py-2.5 rounded-xl text-sm">রিচার্জ সাবমিট করুন</button>
+        </div>
+
+    </div>
+
+    <!-- BOTTOM NAVIGATION (Visible after login) -->
+    <div id="bottom-nav" class="nav-bottom d-none">
+        <div class="nav-item-btn active" onclick="switchPage('home')">
+            <i class="fa-solid fa-house"></i>হোম
+        </div>
+        <div class="nav-item-btn" onclick="switchPage('recharge')">
+            <i class="fa-solid fa-plus-circle"></i>রিচার্জ
+        </div>
+        <div class="nav-item-btn" onclick="switchPage('trading')">
+            <i class="fa-solid fa-chart-line"></i>ট্রেডিং
+        </div>
+        <div class="nav-item-btn" onclick="switchPage('team')">
+            <i class="fa-solid fa-users"></i>টিম
+        </div>
+        <div class="nav-item-btn" onclick="switchPage('withdraw')">
+            <i class="fa-solid fa-wallet"></i>উইথড্র
         </div>
     </div>
 
-    <!-- Modal: Withdraw -->
-    <div id="withdrawModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50">
-        <div class="glass-card bg-slate-900 border-slate-700 p-5 rounded-2xl max-w-sm w-full space-y-4">
-            <div class="flex justify-between items-center">
-                <h3 class="text-sm font-bold text-teal-400"><i class="fa-solid fa-arrow-up-right-from-square"></i> USDT উইথড্র</h3>
-                <button onclick="closeModal('withdrawModal')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+    <!-- FACE VERIFICATION MODAL (Camera) -->
+    <div class="modal fade" id="faceModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-white border-secondary">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title"><i class="fa-solid fa-camera text-emerald me-2"></i>রিয়েল-টাইম ফেস ভেরিফিকেশন</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" onclick="stopCamera()"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p class="text-muted small">অনুগ্রহ করে আপনার মুখমণ্ডলী ক্যামেরার সামনে সোজা রাখুন।</p>
+                    <video id="camera-preview" autoplay playsinline></video>
+                    <canvas id="camera-canvas" class="d-none"></canvas>
+                    <div id="verification-progress" class="mt-3 d-none">
+                        <div class="spinner-border text-emerald" role="status"></div>
+                        <p class="mt-2 text-warning small">ফেস স্ক্যানিং হচ্ছে... অনুগ্রহ করে স্থির থাকুন</p>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-accent w-100" onclick="captureFaceAndVerify()">ক্যাপচার এবং ভেরিফাই করুন</button>
+                </div>
             </div>
-            <div>
-                <label class="block text-xs text-slate-400 mb-1">আপনার USDT ওয়ালেট অ্যাড্রেস</label>
-                <input type="text" id="withdrawWallet" placeholder="0x..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-teal-400">
-            </div>
-            <div>
-                <label class="block text-xs text-slate-400 mb-1">উইথড্র পরিমাণ ($)</label>
-                <input type="number" id="withdrawAmount" placeholder="সর্বনিম্ন $5" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-teal-400">
-            </div>
-            <div>
-                <label class="block text-xs text-slate-400 mb-1">৬ ডিজিটের উইথড্র পাসওয়ার্ড</label>
-                <input type="password" maxlength="6" id="withdrawPin" placeholder="******" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-teal-400">
-            </div>
-            <button onclick="submitWithdraw()" class="w-full bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold py-2.5 rounded-xl text-sm">উইথড্র রিকুয়েস্ট পাঠান</button>
         </div>
     </div>
 
-    <!-- Modal: Face Verification Camera Popup -->
-    <div id="faceModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 hidden z-50">
-        <div class="glass-card bg-slate-900 border-slate-700 p-5 rounded-2xl max-w-sm w-full space-y-4 text-center">
-            <h3 class="text-sm font-bold text-teal-400"><i class="fa-solid fa-camera font-bold"></i> ক্যামেরা ফেস ভেরিফিকেশন</h3>
-            <div class="relative w-48 h-48 mx-auto rounded-full overflow-hidden border-4 border-teal-500 bg-slate-950 flex items-center justify-center">
-                <video id="webcam" autoplay playsinline class="w-full h-full object-cover transform -scale-x-100"></video>
-                <div class="absolute inset-0 border-2 border-dashed border-teal-400 rounded-full animate-pulse pointer-events-none"></div>
-            </div>
-            <p class="text-xs text-slate-400" id="faceScanMsg">আপনার মুখমণ্ডল গোল বৃত্তের ভেতরে রাখুন</p>
-            <button onclick="captureFace()" class="w-full bg-teal-500 text-slate-950 font-bold py-2 rounded-xl text-xs">ক্যাপচার ও নিশ্চিত করুন</button>
-        </div>
-    </div>
-
-    <!-- Script Application Logic -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        let currentUser = null;
-        let isFaceVerified = false;
+        let isVerified = false;
+        let balance = 0.00;
+        let mediaStream = null;
 
-        function switchTab(tab) {
-            if(tab === 'signup') {
-                document.getElementById('signupForm').classList.remove('hidden');
-                document.getElementById('loginForm').classList.add('hidden');
-                document.getElementById('tabSignupBtn').className = "flex-1 py-2 rounded-lg font-semibold text-sm bg-teal-500 text-slate-950";
-                document.getElementById('tabLoginBtn').className = "flex-1 py-2 rounded-lg font-semibold text-sm text-slate-400";
-            } else {
-                document.getElementById('signupForm').classList.add('hidden');
-                document.getElementById('loginForm').classList.remove('hidden');
-                document.getElementById('tabLoginBtn').className = "flex-1 py-2 rounded-lg font-semibold text-sm bg-teal-500 text-slate-950";
-                document.getElementById('tabSignupBtn').className = "flex-1 py-2 rounded-lg font-semibold text-sm text-slate-400";
-            }
+        function handleLogin(e) {
+            e.preventDefault();
+            document.getElementById('auth-section').classList.add('d-none');
+            document.getElementById('app-dashboard').classList.remove('d-none');
+            document.getElementById('bottom-nav').classList.remove('d-none');
         }
 
         function handleSignup(e) {
             e.preventDefault();
-            const name = document.getElementById('signupName').value;
-            const phone = document.getElementById('signupPhone').value;
-            const email = document.getElementById('signupEmail').value;
-            const password = document.getElementById('signupPassword').value;
-            const confirmPassword = document.getElementById('signupConfirmPassword').value;
-            const withdrawPin = document.getElementById('signupWithdrawPassword').value;
-            const refCode = document.getElementById('signupRefCode').value || 'HER' + Math.floor(1000 + Math.random() * 9000);
+            alert('অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে! এখন লগইন করুন।');
+            document.getElementById('login-tab').click();
+        }
 
-            if(password !== confirmPassword) {
-                alert('পাসওয়ার্ড এবং কনফার্ম পাসওয়ার্ড মিলছে না!');
-                return;
-            }
-
-            currentUser = { name, phone, email, password, withdrawPin, refCode, balance: 0.00, faceVerified: isFaceVerified };
-            localStorage.setItem('her_user_' + phone, JSON.stringify(currentUser));
-            localStorage.setItem('her_active_user', phone);
+        function switchPage(pageName) {
+            document.querySelectorAll('.page-content').forEach(el => el.classList.add('d-none'));
+            document.getElementById('page-' + pageName).classList.remove('d-none');
             
-            alert('রেজিস্ট্রেশন সফল হয়েছে!');
-            loadDashboard();
-        }
-
-        function handleLogin(e) {
-            e.preventDefault();
-            const id = document.getElementById('loginId').value;
-            const pass = document.getElementById('loginPassword').value;
-            
-            const savedData = localStorage.getItem('her_user_' + id);
-            if(savedData) {
-                const user = JSON.parse(savedData);
-                if(user.password === pass) {
-                    currentUser = user;
-                    localStorage.setItem('her_active_user', id);
-                    loadDashboard();
-                    return;
-                }
-            }
-            // Demo fallback login
-            currentUser = { phone: id, balance: 5.00, refCode: 'HER999', withdrawPin: '123456' };
-            loadDashboard();
-        }
-
-        function loadDashboard() {
-            document.getElementById('authSection').classList.add('hidden');
-            document.getElementById('dashboardSection').classList.remove('hidden');
-            document.getElementById('userInfoHeader').classList.remove('hidden');
-            document.getElementById('userInfoHeader').classList.add('flex');
-            
-            document.getElementById('userPhone').innerText = currentUser.phone || 'User';
-            document.getElementById('userBalance').innerText = currentUser.balance ? currentUser.balance.toFixed(2) : "0.00";
-            document.getElementById('displayRefCode').innerText = currentUser.refCode || 'HER101';
-            document.getElementById('refLinkInput').value = "https://hernextgen.com/ref?code=" + (currentUser.refCode || 'HER101');
-        }
-
-        function logout() {
-            localStorage.removeItem('her_active_user');
-            location.reload();
-        }
-
-        function startFaceVerification() {
-            showModal('faceModal');
-            const video = document.getElementById('webcam');
-            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                navigator.mediaDevices.getUserMedia({ video: true })
-                .then(function (stream) {
-                    video.srcObject = stream;
-                })
-                .catch(function (error) {
-                    document.getElementById('faceScanMsg').innerText = "ক্যামেরা এক্সেস পাওয়া যায়নি!";
-                });
+            document.querySelectorAll('.nav-item-btn').forEach(el => el.classList.remove('active'));
+            const navIndex = ['home', 'recharge', 'trading', 'team', 'withdraw'].indexOf(pageName);
+            if (navIndex !== -1) {
+                document.querySelectorAll('.nav-item-btn')[navIndex].classList.add('active');
             }
         }
 
-        function captureFace() {
-            isFaceVerified = true;
-            const statusBox = document.getElementById('faceStatus');
-            statusBox.classList.remove('hidden');
-            statusBox.innerText = "✓ ফেস ভেরিফিকেশন সফল!";
-            statusBox.className = "text-xs text-emerald-400 font-semibold";
-            closeModal('faceModal');
-        }
-
-        function claimTask() {
-            if(!currentUser) return;
-            currentUser.balance = (currentUser.balance || 0) + 1.50;
-            document.getElementById('userBalance').innerText = currentUser.balance.toFixed(2);
-            document.getElementById('taskBtn').innerText = "সম্পন্ন";
-            document.getElementById('taskBtn').disabled = true;
-            document.getElementById('taskBtn').className = "bg-slate-700 text-slate-500 text-xs font-bold px-3 py-1.5 rounded-lg";
-            alert('অভিনন্দন! $1.50 আপনার ব্যালেন্সে যোগ হয়েছে।');
-        }
-
-        function copyUsdtAddress() {
-            const addr = document.getElementById('usdtAddress').innerText.trim();
+        function copyAddress() {
+            const addr = document.getElementById('deposit-address').innerText;
             navigator.clipboard.writeText(addr);
-            alert('USDT ওয়ালেট ঠিকানায় কপি করা হয়েছে!');
+            alert('ডিপোজিট ওয়ালেট অ্যাড্রেস কপি হয়েছে!');
         }
 
-        function copyRefLink() {
-            const link = document.getElementById('refLinkInput').value;
-            navigator.clipboard.writeText(link);
-            alert('রেফারেল লিংক কপি করা হয়েছে!');
+        function handleRechargeSubmit(e) {
+            e.preventDefault();
+            alert('পেমেন্ট রিকোয়েস্ট জমা হয়েছে! অ্যাডমিন রিভিউয়ের পর ব্যালেন্স যোগ হবে।');
+            switchPage('home');
         }
 
-        function submitRecharge() {
-            const amount = document.getElementById('rechargeAmount').value;
-            const trx = document.getElementById('rechargeTrx').value;
-            if(!amount || !trx) {
-                alert('পরিমাণ এবং ট্রানজ্যাকশন আইডি দুটোই দিন!');
+        function openFaceVerificationModal() {
+            const faceModal = new bootstrap.Modal(document.getElementById('faceModal'));
+            faceModal.show();
+            startCamera();
+        }
+
+        async function startCamera() {
+            try {
+                mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
+                document.getElementById('camera-preview').srcObject = mediaStream;
+            } catch (err) {
+                alert('ক্যামেরা অন করা সম্ভব হয়নি! ক্যামেরা পারমিশন চেক করুন।');
+            }
+        }
+
+        function stopCamera() {
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => track.stop());
+            }
+        }
+
+        function captureFaceAndVerify() {
+            document.getElementById('verification-progress').classList.remove('d-none');
+            setTimeout(() => {
+                isVerified = true;
+                document.getElementById('verification-progress').classList.add('d-none');
+                stopCamera();
+                bootstrap.Modal.getInstance(document.getElementById('faceModal')).hide();
+                
+                const badge = document.getElementById('face-status-badge');
+                badge.className = 'badge-verified';
+                badge.innerHTML = '<i class="fa-solid fa-circle-check"></i> Verified';
+                alert('ফেস ভেরিফিকেশন সফল হয়েছে!');
+            }, 2500);
+        }
+
+        function runTaskProcess() {
+            if (!isVerified) {
+                alert('কাজ শুরু করতে প্রথমে লাইভ ফেস ভেরিফিকেশন সম্পন্ন করুন!');
+                openFaceVerificationModal();
                 return;
             }
-            alert('আপনার রিচার্জ রিকুয়েস্ট সফলভাবে পেন্ডিং-এ জমা হয়েছে। এডমিন রিভিউ করে অ্যাপ্রুভ করবেন।');
-            closeModal('rechargeModal');
-        }
-
-        function submitWithdraw() {
-            const amount = document.getElementById('withdrawAmount').value;
-            const pin = document.getElementById('withdrawPin').value;
-            if(!amount || !pin) {
-                alert('সব তথ্য সঠিকভাবে পূরণ করুন!');
+            if (balance <= 0) {
+                alert('কাজ শুরু করতে আপনার অ্যাকাউন্টে রিচার্জ করুন!');
+                switchPage('recharge');
                 return;
             }
-            if(currentUser && currentUser.withdrawPin && pin !== currentUser.withdrawPin) {
-                alert('ভুল উইথড্র পাসওয়ার্ড!');
+            alert('টাস্ক প্রসেসিং হচ্ছে... প্রফিট যোগ করা হচ্ছে।');
+        }
+
+        function handleWithdrawSubmit(e) {
+            e.preventDefault();
+            if (!isVerified) {
+                alert('উইথড্র করার আগে লাইভ ফেস ভেরিফিকেশন আবশ্যক!');
+                openFaceVerificationModal();
                 return;
             }
-            alert('উইথড্র রিকুয়েস্ট পেন্ডিং রয়েছে।');
-            closeModal('withdrawModal');
+            if (balance <= 0) {
+                alert('আপনার অ্যাকাউন্টে পর্যাপ্ত ব্যালেন্স নেই!');
+                return;
+            }
+            alert('উইথড্র রিকোয়েস্ট সফলভাবে জমা হয়েছে!');
         }
-
-        function adminAddBalance(amt) {
-            if(!currentUser) return;
-            currentUser.balance = (currentUser.balance || 0) + amt;
-            document.getElementById('userBalance').innerText = currentUser.balance.toFixed(2);
-            alert('এডমিন: ব্যালেন্স যোগ করা হয়েছে!');
-        }
-
-        function adminApproveAll() {
-            alert('এডমিন: সকল পেন্ডিং পেমেন্ট অ্যাপ্রুভ করা হয়েছে!');
-        }
-
-        function showModal(id) { document.getElementById(id).classList.remove('hidden'); }
-        function closeModal(id) { document.getElementById(id).classList.close ? document.getElementById(id).close() : document.getElementById(id).classList.add('hidden'); }
     </script>
 </body>
 </html>
