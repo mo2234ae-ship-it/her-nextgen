@@ -15,116 +15,25 @@
             --text-color: #f8fafc;
             --text-muted: #94a3b8;
         }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            padding-bottom: 70px;
-        }
-
-        .auth-container {
-            max-width: 450px;
-            margin: 40px auto;
-            background-color: var(--card-bg);
-            padding: 30px;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-        }
-
-        .dashboard-container {
-            max-width: 600px;
-            margin: 20px auto;
-            padding: 15px;
-        }
-
-        .card-custom {
-            background-color: var(--card-bg);
-            border-radius: 16px;
-            border: 1px solid #334155;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .btn-accent {
-            background-color: var(--accent-color);
-            color: white;
-            font-weight: 600;
-            border: none;
-            padding: 12px;
-            border-radius: 10px;
-            width: 100%;
-        }
-
-        .btn-accent:hover {
-            background-color: var(--accent-hover);
-            color: white;
-        }
-
-        .nav-bottom {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background-color: var(--card-bg);
-            border-top: 1px solid #334155;
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 0;
-            z-index: 1000;
-        }
-
-        .nav-item-btn {
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 12px;
-            text-align: center;
-            cursor: pointer;
-        }
-
-        .nav-item-btn.active, .nav-item-btn:hover {
-            color: var(--accent-color);
-        }
-
-        .nav-item-btn i {
-            font-size: 20px;
-            display: block;
-            margin-bottom: 3px;
-        }
-
-        .badge-verified {
-            background-color: #065f46;
-            color: #34d399;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-        }
-
-        .badge-unverified {
-            background-color: #881337;
-            color: #fecdd3;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-        }
-
-        #camera-preview {
-            width: 100%;
-            max-height: 250px;
-            background: #000;
-            border-radius: 12px;
-            object-fit: cover;
-        }
-
-        .copy-box {
-            background: #0f172a;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px dashed #475569;
-            word-break: break-all;
-            font-size: 13px;
-        }
+        body { background-color: var(--bg-color); color: var(--text-color); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding-bottom: 70px; }
+        .auth-container { max-width: 450px; margin: 40px auto; background-color: var(--card-bg); padding: 30px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .dashboard-container { max-width: 600px; margin: 20px auto; padding: 15px; }
+        .card-custom { background-color: var(--card-bg); border-radius: 16px; border: 1px solid #334155; padding: 20px; margin-bottom: 20px; }
+        .btn-accent { background-color: var(--accent-color); color: white; font-weight: 600; border: none; padding: 12px; border-radius: 10px; width: 100%; }
+        .btn-accent:hover { background-color: var(--accent-hover); color: white; }
+        .nav-bottom { position: fixed; bottom: 0; left: 0; right: 0; background-color: var(--card-bg); border-top: 1px solid #334155; display: flex; justify-content: space-around; padding: 10px 0; z-index: 1000; }
+        .nav-item-btn { color: var(--text-muted); text-decoration: none; font-size: 12px; text-align: center; cursor: pointer; }
+        .nav-item-btn.active, .nav-item-btn:hover { color: var(--accent-color); }
+        .nav-item-btn i { font-size: 20px; display: block; margin-bottom: 3px; }
+        .badge-verified { background-color: #065f46; color: #34d399; padding: 5px 10px; border-radius: 20px; font-size: 12px; }
+        .badge-unverified { background-color: #881337; color: #fecdd3; padding: 5px 10px; border-radius: 20px; font-size: 12px; }
+        #camera-preview { width: 100%; max-height: 250px; background: #000; border-radius: 12px; object-fit: cover; }
+        .copy-box { background: #0f172a; padding: 10px; border-radius: 8px; border: 1px dashed #475569; word-break: break-all; font-size: 13px; }
     </style>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
@@ -147,11 +56,11 @@
                 <form id="loginForm" onsubmit="handleLogin(event)">
                     <div class="mb-3">
                         <label class="form-label">ফোন নম্বর</label>
-                        <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="017xxxxxxxx" required>
+                        <input type="text" id="login-phone" class="form-control bg-dark text-white border-secondary" placeholder="017xxxxxxxx" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">পাসওয়ার্ড</label>
-                        <input type="password" class="form-control bg-dark text-white border-secondary" placeholder="******" required>
+                        <input type="password" id="login-pass" class="form-control bg-dark text-white border-secondary" placeholder="******" required>
                     </div>
                     <button type="submit" class="btn btn-accent mt-3">লগইন করুন</button>
                 </form>
@@ -162,19 +71,19 @@
                 <form id="signupForm" onsubmit="handleSignup(event)">
                     <div class="mb-3">
                         <label class="form-label">পূর্ণ নাম</label>
-                        <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="আপনার নাম" required>
+                        <input type="text" id="signup-name" class="form-control bg-dark text-white border-secondary" placeholder="আপনার নাম" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">ফোন নম্বর</label>
-                        <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="017xxxxxxxx" required>
+                        <input type="text" id="signup-phone" class="form-control bg-dark text-white border-secondary" placeholder="017xxxxxxxx" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">পাসওয়ার্ড</label>
-                        <input type="password" class="form-control bg-dark text-white border-secondary" placeholder="******" required>
+                        <input type="password" id="signup-pass" class="form-control bg-dark text-white border-secondary" placeholder="******" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">রেফারেল কোড (ঐচ্ছিক)</label>
-                        <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="SNAI1234">
+                        <input type="text" id="signup-ref" class="form-control bg-dark text-white border-secondary" placeholder="SNAI1234">
                     </div>
                     <button type="submit" class="btn btn-accent mt-3">অ্যাকাউন্ট তৈরি করুন</button>
                 </form>
@@ -247,11 +156,11 @@
                 <form onsubmit="handleRechargeSubmit(event)">
                     <div class="mb-3">
                         <label class="form-label">রিচার্জ পরিমাণ (USDT)</label>
-                        <input type="number" min="10" class="form-control bg-dark text-white border-secondary" placeholder="যেমন: 50" required>
+                        <input type="number" id="recharge-amount" min="10" class="form-control bg-dark text-white border-secondary" placeholder="যেমন: 50" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Transaction Hash (TxID)</label>
-                        <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="TxID পেস্ট করুন" required>
+                        <input type="text" id="recharge-txid" class="form-control bg-dark text-white border-secondary" placeholder="TxID পেস্ট করুন" required>
                     </div>
                     <button type="submit" class="btn btn-accent w-100">পেমেন্ট সাবমিট করুন</button>
                 </form>
@@ -280,7 +189,7 @@
             <div class="card-custom">
                 <h5><i class="fa-solid fa-user-group text-primary me-2"></i>টিম এবং রেফারেল</h5>
                 <div class="copy-box my-3 d-flex justify-content-between align-items-center">
-                    <small>রেফারেল লিংক: https://her-nextgen.vercel.app/?ref=SNAI88</small>
+                    <small id="ref-link-display">https://her-nextgen.vercel.app/?ref=SNAI88</small>
                     <button class="btn btn-sm btn-secondary ms-2" onclick="alert('রেফারেল লিংক কপি হয়েছে!')"><i class="fa-regular fa-copy"></i></button>
                 </div>
 
@@ -288,28 +197,16 @@
                     <div class="col-6">
                         <div class="p-2 bg-dark rounded border border-secondary">
                             <small class="text-muted">মোট টিম সাইজ</small>
-                            <h4 class="text-white m-0">12 জন</h4>
+                            <h4 class="text-white m-0">0 জন</h4>
                         </div>
                     </div>
                     <div class="col-6">
                         <div class="p-2 bg-dark rounded border border-secondary">
                             <small class="text-muted">টিম কমিশন</small>
-                            <h4 class="text-success m-0">$14.50</h4>
+                            <h4 class="text-success m-0">$0.00</h4>
                         </div>
                     </div>
                 </div>
-
-                <h6>রেফারেল লেভেল:</h6>
-                <ul class="list-group list-group-flush bg-dark rounded">
-                    <li class="list-group-item bg-dark text-white d-flex justify-content-between border-secondary">
-                        <span>Level 1 (Direct)</span>
-                        <span class="badge bg-success">8 Members</span>
-                    </li>
-                    <li class="list-group-item bg-dark text-white d-flex justify-content-between border-secondary">
-                        <span>Level 2 (Indirect)</span>
-                        <span class="badge bg-info">4 Members</span>
-                    </li>
-                </ul>
             </div>
         </div>
 
@@ -322,11 +219,11 @@
                 <form onsubmit="handleWithdrawSubmit(event)">
                     <div class="mb-3">
                         <label class="form-label">উইথড্র পরিমাণ (USDT)</label>
-                        <input type="number" min="10" class="form-control bg-dark text-white border-secondary" placeholder="সর্বনিম্ন $10" required>
+                        <input type="number" id="withdraw-amount" min="10" class="form-control bg-dark text-white border-secondary" placeholder="সর্বনিম্ন $10" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">আপনার USDT (TRC20/BEP20) ওয়ালেট অ্যাড্রেস</label>
-                        <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="0x..." required>
+                        <input type="text" id="withdraw-wallet" class="form-control bg-dark text-white border-secondary" placeholder="0x..." required>
                     </div>
                     <button type="submit" class="btn btn-danger py-2 w-100">উইথড্র নিশ্চিত করুন</button>
                 </form>
@@ -365,7 +262,6 @@
                 <div class="modal-body text-center">
                     <p class="text-muted small">অনুগ্রহ করে আপনার মুখমণ্ডলী ক্যামেরার সামনে সোজা রাখুন।</p>
                     <video id="camera-preview" autoplay playsinline></video>
-                    <canvas id="camera-canvas" class="d-none"></canvas>
                     <div id="verification-progress" class="mt-3 d-none">
                         <div class="spinner-border text-emerald" role="status"></div>
                         <p class="mt-2 text-warning small">ফেস স্ক্যানিং হচ্ছে... অনুগ্রহ করে স্থির থাকুন</p>
@@ -380,21 +276,166 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        let isVerified = false;
-        let balance = 0.00;
+        // Real Firebase Config provided by User
+        const firebaseConfig = {
+          apiKey: "AIzaSyAhoxDDUaHqxvocfckYoc2azrsmtEwLu6M",
+          authDomain: "her-nextgen.firebaseapp.com",
+          projectId: "her-nextgen",
+          storageBucket: "her-nextgen.firebasestorage.app",
+          messagingSenderId: "806696704641",
+          appId: "1:806696704641:web:dc6ecb0f613b96a08a8b80",
+          measurementId: "G-VKJMSV0J5B"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        let currentUser = null;
         let mediaStream = null;
 
-        function handleLogin(e) {
+        async function handleSignup(e) {
             e.preventDefault();
-            document.getElementById('auth-section').classList.add('d-none');
-            document.getElementById('app-dashboard').classList.remove('d-none');
-            document.getElementById('bottom-nav').classList.remove('d-none');
+            const name = document.getElementById('signup-name').value;
+            const phone = document.getElementById('signup-phone').value;
+            const pass = document.getElementById('signup-pass').value;
+            const ref = document.getElementById('signup-ref').value;
+
+            try {
+                const userDoc = await db.collection('users').doc(phone).get();
+                if (userDoc.exists) {
+                    alert('এই ফোন নম্বর দিয়ে ইতিমধ্যে অ্যাকাউন্ট তৈরি করা হয়েছে!');
+                    return;
+                }
+
+                await db.collection('users').doc(phone).set({
+                    name: name,
+                    phone: phone,
+                    password: pass,
+                    ref: ref,
+                    balance: 0.00,
+                    isVerified: false,
+                    createdAt: new Date().toISOString()
+                });
+
+                alert('অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে! এখন লগইন করুন।');
+                document.getElementById('login-tab').click();
+            } catch (err) {
+                alert('ত্রুটি! ফায়ারবেস কনসোলে Firestore Database তৈরি করা নিশ্চিত করুন।');
+            }
         }
 
-        function handleSignup(e) {
+        async function handleLogin(e) {
             e.preventDefault();
-            alert('অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে! এখন লগইন করুন।');
-            document.getElementById('login-tab').click();
+            const phone = document.getElementById('login-phone').value;
+            const pass = document.getElementById('login-pass').value;
+
+            try {
+                const userDoc = await db.collection('users').doc(phone).get();
+                if (!userDoc.exists) {
+                    alert('কোনো ইউজার পাওয়া যায়নি! প্রথমে সাইন আপ করুন।');
+                    return;
+                }
+
+                const userData = userDoc.data();
+                if (userData.password !== pass) {
+                    alert('ভুল পাসওয়ার্ড! সঠিক পাসওয়ার্ড দিন।');
+                    return;
+                }
+
+                currentUser = userData;
+                loadUserData();
+
+                document.getElementById('auth-section').classList.add('d-none');
+                document.getElementById('app-dashboard').classList.remove('d-none');
+                document.getElementById('bottom-nav').classList.remove('d-none');
+
+                // Realtime balance update listener
+                db.collection('users').doc(phone).onSnapshot(snapshot => {
+                    if (snapshot.exists) {
+                        currentUser = snapshot.data();
+                        loadUserData();
+                    }
+                });
+
+            } catch (err) {
+                alert('লগইন করতে সমস্যা হচ্ছে: ' + err.message);
+            }
+        }
+
+        function loadUserData() {
+            if (!currentUser) return;
+            document.getElementById('user-display-name').innerText = currentUser.name;
+            document.getElementById('user-display-phone').innerText = currentUser.phone;
+            document.getElementById('user-balance').innerText = parseFloat(currentUser.balance).toFixed(2);
+            document.getElementById('ref-link-display').innerText = 'https://her-nextgen.vercel.app/?ref=' + currentUser.phone;
+
+            const badge = document.getElementById('face-status-badge');
+            if (currentUser.isVerified) {
+                badge.className = 'badge-verified';
+                badge.innerHTML = '<i class="fa-solid fa-circle-check"></i> Verified';
+            } else {
+                badge.className = 'badge-unverified';
+                badge.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Unverified';
+            }
+        }
+
+        async function handleRechargeSubmit(e) {
+            e.preventDefault();
+            const amount = parseFloat(document.getElementById('recharge-amount').value);
+            const txid = document.getElementById('recharge-txid').value;
+
+            try {
+                await db.collection('recharges').add({
+                    userPhone: currentUser.phone,
+                    userName: currentUser.name,
+                    amount: amount,
+                    txid: txid,
+                    status: 'pending',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                alert('রিচার্জ রিকোয়েস্ট জমা হয়েছে! অ্যাডমিন রিভিউয়ের পর ব্যালেন্স যোগ হবে।');
+                document.getElementById('recharge-amount').value = '';
+                document.getElementById('recharge-txid').value = '';
+                switchPage('home');
+            } catch (err) {
+                alert('রিকোয়েস্ট সাবমিট করা যায়নি!');
+            }
+        }
+
+        async function handleWithdrawSubmit(e) {
+            e.preventDefault();
+            const amount = parseFloat(document.getElementById('withdraw-amount').value);
+            const wallet = document.getElementById('withdraw-wallet').value;
+
+            if (!currentUser.isVerified) {
+                alert('উইথড্র করার আগে লাইভ ফেস ভেরিফিকেশন আবশ্যক!');
+                openFaceVerificationModal();
+                return;
+            }
+
+            if (currentUser.balance < amount) {
+                alert('আপনার অ্যাকাউন্টে পর্যাপ্ত ব্যালেন্স নেই!');
+                return;
+            }
+
+            try {
+                await db.collection('withdraws').add({
+                    userPhone: currentUser.phone,
+                    userName: currentUser.name,
+                    amount: amount,
+                    wallet: wallet,
+                    status: 'pending',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                alert('উইথড্র রিকোয়েস্ট সফলভাবে জমা হয়েছে!');
+                document.getElementById('withdraw-amount').value = '';
+                document.getElementById('withdraw-wallet').value = '';
+                switchPage('home');
+            } catch (err) {
+                alert('উইথড্র রিকোয়েস্ট পাঠানো যায়নি!');
+            }
         }
 
         function switchPage(pageName) {
@@ -414,12 +455,6 @@
             alert('ডিপোজিট ওয়ালেট অ্যাড্রেস কপি হয়েছে!');
         }
 
-        function handleRechargeSubmit(e) {
-            e.preventDefault();
-            alert('পেমেন্ট রিকোয়েস্ট জমা হয়েছে! অ্যাডমিন রিভিউয়ের পর ব্যালেন্স যোগ হবে।');
-            switchPage('home');
-        }
-
         function openFaceVerificationModal() {
             const faceModal = new bootstrap.Modal(document.getElementById('faceModal'));
             faceModal.show();
@@ -431,7 +466,7 @@
                 mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
                 document.getElementById('camera-preview').srcObject = mediaStream;
             } catch (err) {
-                alert('ক্যামেরা অন করা সম্ভব হয়নি! ক্যামেরা পারমিশন চেক করুন।');
+                alert('ক্যামেরা অন করা সম্ভব হয়নি!');
             }
         }
 
@@ -443,45 +478,31 @@
 
         function captureFaceAndVerify() {
             document.getElementById('verification-progress').classList.remove('d-none');
-            setTimeout(() => {
-                isVerified = true;
+            setTimeout(async () => {
                 document.getElementById('verification-progress').classList.add('d-none');
                 stopCamera();
                 bootstrap.Modal.getInstance(document.getElementById('faceModal')).hide();
                 
-                const badge = document.getElementById('face-status-badge');
-                badge.className = 'badge-verified';
-                badge.innerHTML = '<i class="fa-solid fa-circle-check"></i> Verified';
+                await db.collection('users').doc(currentUser.phone).update({
+                    isVerified: true
+                });
+
                 alert('ফেস ভেরিফিকেশন সফল হয়েছে!');
             }, 2500);
         }
 
         function runTaskProcess() {
-            if (!isVerified) {
+            if (!currentUser.isVerified) {
                 alert('কাজ শুরু করতে প্রথমে লাইভ ফেস ভেরিফিকেশন সম্পন্ন করুন!');
                 openFaceVerificationModal();
                 return;
             }
-            if (balance <= 0) {
+            if (currentUser.balance <= 0) {
                 alert('কাজ শুরু করতে আপনার অ্যাকাউন্টে রিচার্জ করুন!');
                 switchPage('recharge');
                 return;
             }
             alert('টাস্ক প্রসেসিং হচ্ছে... প্রফিট যোগ করা হচ্ছে।');
-        }
-
-        function handleWithdrawSubmit(e) {
-            e.preventDefault();
-            if (!isVerified) {
-                alert('উইথড্র করার আগে লাইভ ফেস ভেরিফিকেশন আবশ্যক!');
-                openFaceVerificationModal();
-                return;
-            }
-            if (balance <= 0) {
-                alert('আপনার অ্যাকাউন্টে পর্যাপ্ত ব্যালেন্স নেই!');
-                return;
-            }
-            alert('উইথড্র রিকোয়েস্ট সফলভাবে জমা হয়েছে!');
         }
     </script>
 </body>

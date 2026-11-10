@@ -11,6 +11,10 @@
         .admin-card { background-color: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
         .table-dark { background-color: #1e293b; color: #fff; }
     </style>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
 <body class="p-4">
 
@@ -58,13 +62,14 @@
             </div>
         </div>
 
+        <!-- RECHARGE REQUESTS LIST -->
         <div class="admin-card mt-4">
             <h5><i class="fa-solid fa-wallet text-warning me-2"></i>ইউজার রিচার্জ রিকোয়েস্ট লিস্ট</h5>
             <div class="table-responsive mt-3">
                 <table class="table table-dark table-striped align-middle">
                     <thead>
                         <tr>
-                            <th>ইউজার</th>
+                            <th>ইউজার নাম / ফোন</th>
                             <th>পরিমাণ (USDT)</th>
                             <th>TxID</th>
                             <th>স্ট্যাটাস</th>
@@ -73,7 +78,31 @@
                     </thead>
                     <tbody id="recharge-table-body">
                         <tr>
-                            <td colspan="5" class="text-center text-muted">কোনো নতুন রিচার্জ রিকোয়েস্ট নেই</td>
+                            <td colspan="5" class="text-center text-muted">লোডিং...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- USER MANAGEMENT & PASSWORD RESET LIST -->
+        <div class="admin-card mt-4">
+            <h5><i class="fa-solid fa-users text-info me-2"></i>ইউজার ম্যানেজমেন্ট ও পাসওয়ার্ড রিসেট</h5>
+            <div class="table-responsive mt-3">
+                <table class="table table-dark table-striped align-middle">
+                    <thead>
+                        <tr>
+                            <th>ফোন নম্বর</th>
+                            <th>নাম</th>
+                            <th>বর্তমান ব্যালেন্স</th>
+                            <th>পাসওয়ার্ড</th>
+                            <th>নতুন পাসওয়ার্ড</th>
+                            <th>অ্যাকশন</th>
+                        </tr>
+                    </thead>
+                    <tbody id="user-table-body">
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">লোডিং...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -82,36 +111,144 @@
     </div>
 
     <script>
+        // Real Firebase Config provided by User
+        const firebaseConfig = {
+          apiKey: "AIzaSyAhoxDDUaHqxvocfckYoc2azrsmtEwLu6M",
+          authDomain: "her-nextgen.firebaseapp.com",
+          projectId: "her-nextgen",
+          storageBucket: "her-nextgen.firebasestorage.app",
+          messagingSenderId: "806696704641",
+          appId: "1:806696704641:web:dc6ecb0f613b96a08a8b80",
+          measurementId: "G-VKJMSV0J5B"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
         function handleAdminLogin(e) {
             e.preventDefault();
             const pass = document.getElementById('admin-pass').value;
             if (pass === 'admin123') {
                 document.getElementById('admin-login-box').classList.add('d-none');
                 document.getElementById('admin-dashboard').classList.remove('d-none');
-                loadAdminData();
+                loadRealtimeAdminData();
             } else {
                 alert('ভুল পাসওয়ার্ড! সঠিক পাসওয়ার্ড দিন (admin123)');
             }
         }
 
-        function loadAdminData() {
-            document.getElementById('total-users').innerText = '5';
-            document.getElementById('total-recharges').innerText = '2';
-            document.getElementById('total-withdraws').innerText = '1';
+        function loadRealtimeAdminData() {
+            // Listen to total users & load user table
+            db.collection('users').onSnapshot(snapshot => {
+                document.getElementById('total-users').innerText = snapshot.size;
+                const userTbody = document.getElementById('user-table-body');
+                if (snapshot.empty) {
+                    userTbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">কোনো ইউজার নিবন্ধিত হয়নি</td></tr>';
+                    return;
+                }
 
-            const tbody = document.getElementById('recharge-table-body');
-            tbody.innerHTML = `
-                <tr>
-                    <td>01712345678</td>
-                    <td>$50 USDT</td>
-                    <td>0x8f9c...31a2</td>
-                    <td><span class="badge bg-warning">Pending</span></td>
-                    <td>
-                        <button class="btn btn-sm btn-success me-1" onclick="alert('রিচার্জ এপ্রুভ করা হয়েছে!')">Approve</button>
-                        <button class="btn btn-sm btn-danger" onclick="alert('রিচার্জ রিজেক্ট করা হয়েছে!')">Reject</button>
-                    </td>
-                </tr>
-            `;
+                let html = '';
+                snapshot.forEach(doc => {
+                    const u = doc.data();
+                    html += `
+                        <tr>
+                            <td>${u.phone}</td>
+                            <td>${u.name}</td>
+                            <td>$${parseFloat(u.balance || 0).toFixed(2)}</td>
+                            <td><code>${u.password}</code></td>
+                            <td>
+                                <input type="text" id="new-pass-${u.phone}" class="form-control form-control-sm bg-dark text-white border-secondary" placeholder="নতুন পাসওয়ার্ড">
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-primary" onclick="updateUserPassword('${u.phone}')">পাসওয়ার্ড চেঞ্জ</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                userTbody.innerHTML = html;
+            });
+
+            // Listen to recharges
+            db.collection('recharges').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+                document.getElementById('total-recharges').innerText = snapshot.docs.filter(d => d.data().status === 'pending').length;
+                const tbody = document.getElementById('recharge-table-body');
+                
+                if (snapshot.empty) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">কোনো রিচার্জ রিকোয়েস্ট নেই</td></tr>';
+                    return;
+                }
+
+                let html = '';
+                snapshot.forEach(doc => {
+                    const r = doc.data();
+                    const reqId = doc.id;
+                    const statusBadge = r.status === 'approved' ? '<span class="badge bg-success">Approved</span>' : (r.status === 'rejected' ? '<span class="badge bg-danger">Rejected</span>' : '<span class="badge bg-warning">Pending</span>');
+                    
+                    html += `
+                        <tr>
+                            <td>${r.userName} (${r.userPhone})</td>
+                            <td>$${r.amount} USDT</td>
+                            <td><small>${r.txid}</small></td>
+                            <td>${statusBadge}</td>
+                            <td>
+                                ${r.status === 'pending' ? `
+                                    <button class="btn btn-sm btn-success me-1" onclick="approveRecharge('${reqId}', '${r.userPhone}', ${r.amount})">Approve</button>
+                                    <button class="btn btn-sm btn-danger" onclick="rejectRecharge('${reqId}')">Reject</button>
+                                ` : '-'}
+                            </td>
+                        </tr>
+                    `;
+                });
+                tbody.innerHTML = html;
+            });
+
+            // Listen to withdraws
+            db.collection('withdraws').onSnapshot(snapshot => {
+                document.getElementById('total-withdraws').innerText = snapshot.size;
+            });
+        }
+
+        async function approveRecharge(reqId, userPhone, amount) {
+            try {
+                // Update recharge status
+                await db.collection('recharges').doc(reqId).update({ status: 'approved' });
+
+                // Increment user balance
+                const userRef = db.collection('users').doc(userPhone);
+                const userDoc = await userRef.get();
+                if (userDoc.exists) {
+                    const currentBalance = parseFloat(userDoc.data().balance || 0);
+                    await userRef.update({ balance: currentBalance + parseFloat(amount) });
+                }
+
+                alert('রিচার্জ সফলভাবে এপ্রুভ এবং ব্যালেন্স যোগ করা হয়েছে!');
+            } catch (err) {
+                alert('এপ্রুভ করতে সমস্যা হয়েছে: ' + err.message);
+            }
+        }
+
+        async function rejectRecharge(reqId) {
+            try {
+                await db.collection('recharges').doc(reqId).update({ status: 'rejected' });
+                alert('রিচার্জ রিকোয়েস্ট রিজেক্ট করা হয়েছে!');
+            } catch (err) {
+                alert('রিজেক্ট করতে সমস্যা হয়েছে!');
+            }
+        }
+
+        async function updateUserPassword(userPhone) {
+            const newPass = document.getElementById('new-pass-' + userPhone).value;
+            if (!newPass) {
+                alert('অনুগ্রহ করে নতুন পাসওয়ার্ড লিখুন!');
+                return;
+            }
+
+            try {
+                await db.collection('users').doc(userPhone).update({ password: newPass });
+                alert('পাসওয়ার্ড সফলভাবে পরিবর্তন করা হয়েছে!');
+            } catch (err) {
+                alert('পাসওয়ার্ড আপডেট করা যায়নি!');
+            }
         }
     </script>
 </body>
