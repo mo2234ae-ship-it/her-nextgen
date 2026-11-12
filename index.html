@@ -216,12 +216,12 @@
 
             <!-- 4. WORK / TASK (UTILITY TOKEN) VIEW -->
             <div id="view-work" class="view-section space-y-5 hidden">
-                <!-- Utility Token Banner -->
+                <!-- Utility Token Banner with Cyber NFT image preview -->
                 <div class="glass-panel p-5 rounded-2xl text-center space-y-3 border border-cyberpurple/40">
-                    <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-cyberpurple to-cyberaccent p-0.5 glow-box">
-                        <div class="w-full h-full bg-cyberdark rounded-2xl flex items-center justify-center">
-                            <i class="fa-solid fa-coins text-2xl text-cyberpurple"></i>
-                        </div>
+                    <div class="relative w-full h-36 rounded-xl overflow-hidden mb-2 border border-cyberpurple/50 glow-box">
+                        <img src="https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?w=600&auto=format&fit=crop&q=80" alt="Cyber NFT Utility Token" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-cyberdark via-transparent to-transparent"></div>
+                        <span class="absolute bottom-2 left-3 px-2 py-0.5 bg-cyberpurple/80 text-white text-[10px] font-bold rounded-full">HNG UTILITY TOKEN</span>
                     </div>
                     <h3 class="text-base font-bold text-white glow-text">HNG Utility Token Staking</h3>
                     <p class="text-xs text-gray-300 leading-relaxed">
@@ -962,6 +962,7 @@
             // Withdraw List
             let wContainer = document.getElementById('adminWithdrawList');
             let wHtml = '';
+            adminWithdrawSubmissions.provideHtml = true;
             adminWithdrawSubmissions.forEach((w, idx) => {
                 wHtml += `
                     <div class="bg-cyberdark p-3 rounded-xl border border-gray-700 text-xs space-y-2">
